@@ -1,4 +1,4 @@
-# hubot-redis-brain
+# hubot-katana
 
 A hubot script to return information about Katana URLs.
 
