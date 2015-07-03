@@ -1,0 +1,23 @@
+{
+  "name": "hubot-katana",
+  "version": "1.0.0",
+  "description": "Reply to Katana URLs being posted, with detailed information about the builds to Slack.",
+  "main": "index.coffee",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opdude/hubot-katana"
+  },
+  "keywords": [
+    "hubot",
+    "katana"
+  ],
+  "author": "Daniel Hobley",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/opdude/hubot-katana/issues"
+  },
+  "homepage": "https://github.com/opdude/hubot-katana"
+}
