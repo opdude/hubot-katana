@@ -68,7 +68,7 @@ send_katana_msg = (msg, hostname, build) ->
         slack_attachement(msg, hostname, build)
 
 module.exports = (robot) ->
-    robot.hear ///(#{options.hostname})\/projects\/.+\/builders\/(.+)\/builds\/(\d+)\?.*///i, (msg) ->
+    robot.hear ///(#{options.hostname})\/projects\/.+\/builders\/(.+)\/builds\/(\d+)\.*///i, (msg) ->
         hostname = msg.match[1]
         builder = msg.match[2]
         number = msg.match[3]
