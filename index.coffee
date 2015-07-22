@@ -62,7 +62,7 @@ plain = (msg, hostname, build) ->
         msg.robot.logger.debug(error)
 
 send_katana_msg = (msg, hostname, build) ->
-    if options.slack != false
+    if options.slack == false
         plain(msg, hostname, build)
     else
         slack_attachement(msg, hostname, build)
