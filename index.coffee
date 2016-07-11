@@ -10,8 +10,8 @@ states = {
 }
 
 options =
-    hostname: process.env.KATANA_HOSTNAME or "katana.*"
-    slack: process.env.HUBOT_SLACK_TOKEN or false
+    hostname: process.env.KATANA_HOSTNAME or "(staging-*)katana.*"
+    slack: if process.env.HUBOT_SLACK_TOKEN.length > 0 then true else false
 
 
 slack_attachement = (msg, hostname, build) ->
@@ -22,7 +22,7 @@ slack_attachement = (msg, hostname, build) ->
             content:
                 mrkdwn_in: ["text", "fields", "author_name"]
                 color: states[build.results_text][0]
-                author_name: "<http://#{hostname}|Katana>"
+                author_name: "Katana"
                 author_icon: "https://oc.unity3d.com/index.php/s/2738VI33nxJ98Bn/download"
                 text: ""
                 fields: [
@@ -62,17 +62,18 @@ plain = (msg, hostname, build) ->
         msg.robot.logger.debug(error)
 
 send_katana_msg = (msg, hostname, build) ->
-    if options.slack != false
-        plain(msg, hostname, build)
-    else
+    if options.slack
         slack_attachement(msg, hostname, build)
+    else
+        plain(msg, hostname, build)
 
 module.exports = (robot) ->
-    robot.hear ///(#{options.hostname})\/projects\/.+\/builders\/(.+)\/builds\/(\d+)\?.*///i, (msg) ->
-        hostname = msg.match[1]
-        builder = msg.match[2]
-        number = msg.match[3]
-        url = "http://#{hostname}/json/builders/#{builder}/builds/#{number}"
+    robot.hear ///(http|https)://(#{options.hostname})\/projects\/.+\/builders\/(.+)\/builds\/(\d+)\?.*///i, (msg) ->
+        scheme = msg.match[1]
+        hostname = msg.match[2]
+        builder = msg.match[4]
+        number = msg.match[5]
+        url = "#{scheme}://#{hostname}/json/builders/#{builder}/builds/#{number}"
         msg.http(url)
         .get() (err, res, body) ->
             try
@@ -86,17 +87,16 @@ module.exports = (robot) ->
                 msg.robot.logger.debug(error)
 
 
-    robot.hear ///(#{options.hostname})\/projects\/Unity\/builders\?(.+)///i, (msg) ->
-        hostname = msg.match[1]
-        params = msg.match[2]
+    robot.hear ///(http|https)://(#{options.hostname})\/projects\/Unity\/builders\?(.+)///i, (msg) ->
+        scheme = msg.match[1]
+        hostname = msg.match[2]
+        params = msg.match[4]
         builder = "proj0-ABuildVerification"
-        url = "http://#{hostname}/json/projects/Unity/#{builder}/?{#params}"
-
+        url = "#{scheme}://#{hostname}/json/projects/Unity/#{builder}/?#{params}"
         msg.http(url)
         .get() (err, res, body) ->
             try
                 json = JSON.parse(body)
-
                 send_katana_msg(msg, hostname, json.latestBuild)
             catch error
                 msg.robot.logger.debug(error)
